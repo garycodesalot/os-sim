@@ -1,0 +1,46 @@
+import React, { useState } from "react";
+import "./styles.css";
+
+class process{
+
+    proccLen;
+    instrArr; //Array to simulate instructions for a given process, will have RETURN as the last element. See Constructor.
+    
+    constructor(proccLen){ 
+
+	this.proccLen = proccLen;
+	this.instrArr = new Array(proccLen).fill(1);
+	this.instrArr[proccLen - 1] = "RETURN"
+    }
+}
+
+function createProcess(formData){
+
+	const length = formData.get("length")
+
+	const process1 = new process(formData);
+	
+    alert(`'${length}' processes created with random amounts of instructions.`);
+}
+
+function App() {
+    return (
+  <>
+        <div className="center">
+            <h1>Dirns OS Scheduler Simulation</h1>
+        </div>
+      
+      <hr />
+      
+      	<form action={createProcess}>
+	    <input name="length" />
+	    <button type="submit">Create Processes</button>
+	</form>
+
+  </>
+    );
+
+    
+}
+
+export default App;
