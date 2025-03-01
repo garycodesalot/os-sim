@@ -1,33 +1,35 @@
 class process{
 
-    proccLen;
-    instrArr; //Array to simulate instructions for a given process, will have RETURN as the last element. See Constructor.
+    procLen = 0;
+    instrArr = []; //Array to simulate instructions for a given process, will have RETURN as the last element. See Constructor.
     
     constructor(){ 
 
-	this.proccLen = proccLen;
-	this.instrArr = new Array(proccLen).fill(1);
-	this.instrArr[proccLen - 1] = "RETURN"
+	this.procLen = Math.floor(Math.random() * (20)) + 1;
+	this.instrArr = new Array(this.procLen).fill(1);
+	this.instrArr[this.procLen - 1] = "RETURN";
     }
 }
 
-function createProcesses(formData){
-
-
-    let processList = [];
-
+function createProc(quantity){
     
-    const length = formData.get("numProcesses")
+    let procList = [];
+    
+    for(let i = 0 ; i < quantity ; i++){
 
-    for(int i = numProcesses0 ; i < numProcesses ; i++){
-
-	processList[i] = new process();
+	procList.push(new process());
 
     }
-    
 
-    
-    const process1 = new process(formData);
-	
-    alert(`'${numProcesses}' processes created with random amounts of instructions.`);
+  return procList;
+
 }
+
+function getProcLen(num, procList){
+
+    return procList[num]?.procLen || 0;
+    
+}
+
+
+export { createProc, process, getProcLen };
