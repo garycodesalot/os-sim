@@ -1,21 +1,27 @@
 import React, { useState } from "react";
 import "./styles.css";
-import {createProc, process, getProcLen} from "./utils.js";
+import {createProc, process, ProcListDeets} from "./utils.js";
 
 function App() {
 
-     const[procList, setProcList] = useState([]);
+    const[procList, setProcList] = useState([]);
+    const[instrLen, setProcLen] = useState(0);
 
     function handleProcSubmit(event){
 	
 	event.preventDefault();
 	const formData = new FormData(event.target);
         const numProc = Number(formData.get("quantity"));
+
+	
 	const newProcList = createProc(numProc);
+	setProcList(newProcList);
+
+	
+	const instrLen = procList[2]?.getProcLen() || 0; //currently only gets number of instructions for process 2
+	setProcLen(instrLen);
 
     }
-
-
     
     return (
   <>
@@ -32,7 +38,7 @@ function App() {
 
       <div>
 
-	  Number of instructions in process 1: {getProcLen(2, procList)}
+	  <ProcListDeets procList={procList}/>
 	  
       </div>
       
