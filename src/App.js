@@ -14,12 +14,8 @@ function App() {
         const numProc = Number(formData.get("quantity"));
 
 	
-	const newProcList = createProc(numProc);
-	setProcList(newProcList);
-
-	
-	const instrLen = procList[2]?.getProcLen() || 0; //currently only gets number of instructions for process 2
-	setProcLen(instrLen);
+	const newProcList = createProc(numProc); //resturns process list of size numProc
+	setProcList(newProcList); //updates state of procList with newProcList (just created)
 
     }
     
@@ -41,8 +37,24 @@ function App() {
 	  <ProcListDeets procList={procList}/>
 	  
       </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       
-       
   </>
     );
 

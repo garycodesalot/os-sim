@@ -2,6 +2,8 @@ class process{
 
     procLen = 0;
     instrArr = []; //Array to simulate instructions for a given process, will have RETURN as the last element. See Constructor.
+
+    id = 0; //set by ProcessCB
     
     constructor(){ 
 
@@ -13,6 +15,51 @@ class process{
     getProcLen(){ return this.procLen }
     
 }
+
+class processCB{
+
+    nextID = 1; //Value assigned as each processes ID. Incremented when new process context is initialized with set().
+
+    constructor(){ //Map to manage all processes and PC's
+	
+	this.PCBmap = new Map();
+	
+    }
+
+    setContext(process, pc){   //This will set the process ID for a single process and associate a pc variable to that ID in a key-value pair.
+
+	process.id = this.nextID;
+	this.PCBmap.set(process.id, pc);
+	this.nextID = this.nextID + 1; //inc to next ID.
+	
+    }
+
+    getPC(process){
+	
+	return this.PCBmap.get(process.id);
+	
+    }
+
+    incrementPC(process){
+	
+	let currPC = this.getPC(process) 
+	this.PCBmap.set(process.id, currPC + 1);
+	
+    }
+
+    removeProcess(process){
+
+	this.PCBmap.delete(process.id);
+	
+    }
+
+
+
+
+
+
+}
+
 
 //Generates process list of 'quantity' processes
 function createProc(quantity){
@@ -49,4 +96,4 @@ function ProcListDeets({procList}){
     );
 }
 
-    export { createProc, process, ProcListDeets };
+export { createProc, process, ProcListDeets, processCB };
