@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./styles.css";
-import {createProc, process, ProcListDeets} from "./utils.js";
+import {createProc, process, ProcListDeets, BarChart} from "./utils.js";
+
 
 function App() {
 
@@ -39,17 +40,10 @@ function App() {
       </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
+      <div style={{ width: "600px", margin: "auto" }}>
+	  <h2>FIFO</h2>
+	  <BarChart />
+      </div>
 
 
 

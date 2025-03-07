@@ -1,3 +1,9 @@
+import { Bar } from "react-chartjs-2";
+import {Chart as ChartJS, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from "chart.js";
+
+ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
+
+
 class process{
 
     procLen = 0;
@@ -53,11 +59,6 @@ class processCB{
 	
     }
 
-
-
-
-
-
 }
 
 
@@ -76,7 +77,7 @@ function createProc(quantity){
 
 }
 
-//TODO: function will return HTML that displays all of the processes, their index in proclist, and length.
+//function will return HTML that displays all of the processes, their index in proclist, and length.
 function ProcListDeets({procList}){
 
     return(
@@ -96,4 +97,35 @@ function ProcListDeets({procList}){
     );
 }
 
-export { createProc, process, ProcListDeets, processCB };
+function BarChart({procList}) {
+  const data = {
+    labels: ["red", "blue", "green", "orange", "purple", "yellow"],
+    datasets: [
+      {
+        label: "# of instructions",
+        data: [12, 19, 3, 5, 2, 3],
+          backgroundColor: ["red", "blue", "green", "orange", "purple", "yellow"],
+        borderColor: "black",
+        borderWidth: 1,
+      },
+     	
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      title: { display: false },
+    },
+      scales: {
+	  y: { beginAtZero: true, grid: { display: false }, ticks: { display: true } },
+      },
+  };
+
+  return <Bar data={data} options={options} />;
+};
+
+
+
+export { createProc, process, ProcListDeets, processCB, BarChart };
