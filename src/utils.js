@@ -15,14 +15,57 @@ class process{
 
 	this.procLen = Math.floor(Math.random() * (20)) + 1;
 	this.instrArr = new Array(this.procLen).fill(1);
-	this.instrArr[this.procLen - 1] = "RETURN";
+	//this.instrArr[this.procLen - 1] = "RETURN";
     }
 
     getProcLen(){ return this.procLen }
     
 }
 
-class processCB{
+
+
+
+//Generates process list of 'quantity' processes
+function createProc(quantity){
+    
+    let procList = [];
+    
+    for(let i = 0 ; i < quantity ; i++){
+
+	procList.push(new process());
+
+    }
+
+  return procList;
+
+}
+
+
+//function will return HTML that displays all of the processes, thei index in proclist, and length.
+function ProcListDeets({procList}){
+
+    return(
+	    <div>
+
+	    <h2>Generated Process Properties</h2>
+	    
+	    <ul>
+	    
+	    {procList.map((proc, index) => (
+		<li key={index}>
+		    Process: {index} -  Number of instructions: {proc.getProcLen()}
+		</li>
+	    ))}
+	    </ul>
+	</div>
+    );
+}
+
+
+
+
+
+class Context{
 
     nextID = 1; //Value assigned as each processes ID. Incremented when new process context is initialized with set().
 
@@ -32,8 +75,9 @@ class processCB{
 	
     }
 
-    setContext(process, pc){   //This will set the process ID for a single process and associate a pc variable to that ID in a key-value pair.
+    setContext(process){   //This will set the process ID for a single process and associate a pc variable to that ID in a key-value pair.
 
+	let pc = 0; //default PC starts at "line 1" or index 0 of process.instr[].
 	process.id = this.nextID;
 	this.PCBmap.set(process.id, pc);
 	this.nextID = this.nextID + 1; //inc to next ID.
@@ -42,7 +86,7 @@ class processCB{
 
     getPC(process){
 	
-	return this.PCBmap.get(process.id);
+	return this.PCBmap.get(process.id) ?? 0; //"Nullish coalescing operator" returns 0 if process doesnt have a PC (null or undefined, im not sure)
 	
     }
 
@@ -62,40 +106,33 @@ class processCB{
 }
 
 
-//Generates process list of 'quantity' processes
-function createProc(quantity){
-    
-    let procList = [];
-    
-    for(let i = 0 ; i < quantity ; i++){
+//Need a statement in App(): FIFO_procList = procList &  FIFO_context = new context(); This isnt normal to a real OS but since we are
+//running multiple schedulers each operation needs their own process list to maniupulate.
 
-	procList.push(new process());
+//stepFIFO will manipulate the process / process list as appropiate for FIFO for a singular time quantum of the operation.
+function stepFIFO ({ FIFO_procList }, {FIFO_context}){
+
+    if(FIFO_context.getPC(FIFO_procList[0])){
+
+	FIFO_context.setContext(FIFO_procList[0]); 
 
     }
 
-  return procList;
+    let progress = FIFO_procList[0].instrArr.length - FIFO_context.getPC(FIFO_procList[0]);
+
+    if(progress == 0){
+	FIFO_procList.shift();
+    }
+    else{
+
+	FIFO_context.incrementPC(FIFO_procList[0]);
+	
+    }
+
 
 }
 
-//function will return HTML that displays all of the processes, their index in proclist, and length.
-function ProcListDeets({procList}){
 
-    return(
-	    <div>
-
-	    <h2>Generated Process Properties</h2>
-	    
-	    <ul>
-	    
-	    {procList.map((proc, index) => (
-		<li key={index}>
-		    Process: {index} -  Number of instructions: {proc.getProcLen()}
-		</li>
-	    ))}
-	    </ul>
-	</div>
-    );
-}
 
 function BarChart({procList}) {
   const data = {
@@ -128,4 +165,4 @@ function BarChart({procList}) {
 
 
 
-export { createProc, process, ProcListDeets, processCB, BarChart };
+export { createProc, process, ProcListDeets, Context, BarChart };
