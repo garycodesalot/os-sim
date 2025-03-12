@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./styles.css";
-import {createProc, process, ProcListDeets, BarChart, Context} from "./utils.js";
+import {createProc, process, ProcListDeets, FIFOChart, Context} from "./utils.js";
 
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
     function handleProcSubmit(event){
 	
 	event.preventDefault();
-	const formData = new FormData(event.target);
+	const formData = new FormData(event.target)
         const numProc = Number(formData.get("quantity"));
 
 	
@@ -39,14 +39,14 @@ function App() {
 
       <div>
 
-	  <ProcListDeets procList={procList}/>
+	  <ProcListDeets procList={FIFO_procList}/>
 	  
       </div>
 
 
       <div style={{ width: "600px", margin: "auto" }}>
 	  <h2>FIFO</h2>
-	  <BarChart />
+	  <FIFOChart procs={FIFO_procList} pContext={FIFO_context} />
       </div>
 
  </>
