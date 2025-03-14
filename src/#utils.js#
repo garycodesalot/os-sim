@@ -113,7 +113,7 @@ class Context{
 //stepFIFO will manipulate the process / process list as appropiate for FIFO for a singular time quantum of the operation.
 function stepFIFO ({ FIFO_procList }, {FIFO_context}){
 
-    if (!FIFO_procList){
+    if (!FIFO_procList || FIFO_procList.length == 0){
 
 	//TODO: not exactly an error, maybe find a way to print complete on the FIFO chart or something
 	throw new Error("0 processes to execute in FIFO scheduler");

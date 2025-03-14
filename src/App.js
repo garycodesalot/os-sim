@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./styles.css";
-import {createProc, process, ProcListDeets, FIFOChart, Context} from "./utils.js";
+import {createProc, process, ProcListDeets, FIFOChart, Context, stepFIFO} from "./utils.js";
 
 
 function App() {
 
     const[procList, setProcList] = useState([]);
+
+    const[FIFO_procList, setFIFOProcList] = useState([]);
     const[instrLen, setProcLen] = useState(0);
+    const FIFO_context = useRef(new Context());
+   
 
     function handleProcSubmit(event){
 	
@@ -17,12 +21,17 @@ function App() {
 	
 	const newProcList = createProc(numProc); //resturns process list of size numProc
 	setProcList(newProcList); //updates state of procList with newProcList (just created)
+	setFIFOProcList(newProcList);
 
     }
 
+    function handleStep(event){
 
-    let FIFO_procList = procList;
-    let FIFO_context = new Context();
+	let newContext = stepFIFO(FIFO_procList, FIFO_context.current);
+
+	FIFO_context.current = newContext;
+
+    }
     
     return (
   <>
@@ -39,14 +48,18 @@ function App() {
 
       <div>
 
-	  <ProcListDeets procList={FIFO_procList}/>
+	  <ProcListDeets procs={procList}/>
 	  
       </div>
 
 
       <div style={{ width: "600px", margin: "auto" }}>
 	  <h2>FIFO</h2>
-	  <FIFOChart procs={FIFO_procList} pContext={FIFO_context} />
+	  <FIFOChart procs={FIFO_procList} pContext={FIFO_context.current} />
+	  
+	  <button onClick = {handleStep}>Step once</button>
+
+	  
       </div>
 
  </>
