@@ -14,7 +14,8 @@ class process{
     
     constructor(){ 
 
-	this.procLen = Math.floor(Math.random() * (20)) + 1;
+	//processes have at least one "line" and a return. 
+	this.procLen = Math.floor(Math.random() * (20 - 2 + 1)) + 2;
 	this.instrArr = new Array(this.procLen).fill(1);
 	this.instrArr[this.procLen - 1] = 'RETURN';
     }
@@ -111,93 +112,83 @@ class Context{
 //running multiple schedulers each operation needs their own process list to maniupulate.
 
 //stepFIFO will manipulate the process / process list as appropiate for FIFO for a singular time quantum of the operation.
-function stepFIFO ({ FIFO_procList }, {FIFO_context}){
+function StepFIFO (FIFO_procList, FIFO_context){
 
-    if (!FIFO_procList){
+    //Have to make working context and proclist elements so that useEffect in the barchart function detects a refrence update and changes the chart.
+    let wContext = new Context();
+    wContext = FIFO_context;
+    let wProcList = FIFO_procList
+
+    
+    if (!wProcList || wProcList.length == 0){
 
 	//TODO: not exactly an error, maybe find a way to print complete on the FIFO chart or something
 	throw new Error("0 processes to execute in FIFO scheduler");
 	
     }
-    
 
-    let pc = FIFO_context.getPC(FIFO_procList[0]);
+    let pc = wContext.getPC(wProcList[0]);
 
     //PC 0 means PC has not been set for a process. PC is 1 minumimum for line 1.
     if(pc == 0){
 
-	FIFO_context.setContext(FIFO_procList[0]); 
+	wContext.setContext(wProcList[0]);
+	wContext.incrementPC(wProcList[0]);
+	console.log("IF 1");
 
     }
 
-    if(FIFO_procList[0].instrArr[pc-1] == 'RETURN'){
+    if(wProcList[0].instrArr[pc] == 'RETURN'){
 	
-	FIFO_procList.shift();
+	wProcList.shift();
+	console.log("IF 2");
 	
     }
     else{
 
-	FIFO_context.incrementPC(FIFO_procList[0]);
+	wContext.incrementPC(wProcList[0]);
+	console.log("ELSE");
 	
     }
 
     //returns updated context, procList should be passed by reference and is modified in place so it does not need to be returned.
-    return FIFO_context;
+    return {wProcList, wContext};
     
 }
 
-function FIFOChart({procs , pContext}) {
+function FIFOChart({indata}) {
 
-    //This took forever to fix. BarChart expects initialized labels and datasets for first render. 
-    const [chartData, setChartData] = useState({
+   const [progress, labels] = indata ?? [[0], [0]];
 
-	labels: [],
-	datasets: []
-
-    });
-
-
-     useEffect(() => {
-
-	 
-	const labels = [];
-	const values = [];
-
-	for(let i = 0; i < procs.length ; i++){
-
-	    let pc = pContext.getPC(procs[i])
-	    let progress = (procs[i].instrArr.length - pc);
-
-	    labels.push(procs[i].id);
-	    values.push(progress);
-	    
-	}
-	
-    setChartData({
-	
-    labels: labels,
+   const chartData = {
+       
+    labels: ["red", "blue", "green", "orange", "purple", "yellow"],
     datasets: [
       {
           label: "# of instructions",
-          data: values,
+          data: progress,
           backgroundColor: ["red", "blue", "green", "orange", "purple", "yellow"],
-        borderColor: "black",
-        borderWidth: 1,
+          borderColor: "black",
+          borderWidth: 1,
       },
      	
     ],
-    });
-    }, [procs]); //Second argument for useEffect, updates when data changes.
+   };
 
     
   const options = {
       responsive: true,
       
-      plugins: { legend: { display: false }, title: { display: false },
+      plugins: {
+	  legend: { display: false },
+	  title: { display: false },
 	       },
       
       scales: {
-	  y: { beginAtZero: true, grid: { display: false }, ticks: { display: true } },
+	  y: {
+	      beginAtZero: true, grid: { display: true },
+	      ticks: { display: true }
+	     },
       },
   };
 
@@ -206,4 +197,4 @@ function FIFOChart({procs , pContext}) {
 
 
 
-export { createProc, process, ProcListDeets, Context, FIFOChart, stepFIFO };
+export { createProc, process, ProcListDeets, Context, FIFOChart, StepFIFO };
