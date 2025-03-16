@@ -1,3 +1,35 @@
 .center {
     text-align: center;
 }
+
+.chart-grid{
+    margin: 20px;
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+
+}
+
+.chart-box{
+    
+    width: "600px";
+    margin: "auto" ;
+
+}
+
+.top-header-group{
+    
+    display: flex;
+    justify-content: space between;
+    gap: 20px;
+    margin: 10px;
+}
+
+.lr-header-sections{
+  flex: 1; /* Makes both sections take equal space */
+  padding: 20px;
+}
+
+

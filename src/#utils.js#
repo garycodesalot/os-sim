@@ -43,30 +43,6 @@ function createProc(quantity){
 }
 
 
-//function will return HTML that displays all of the processes, thei index in proclist, and length.
-function ProcListDeets({procs}){
-
-    return(
-	<div style={{margin: "10px"}}>
-
-	    <h2>Generated Process Properties</h2>
-	    
-	    <ul>
-	    
-	    {procs.map((proc, index) => (
-		<li key={index}>
-		    Process: {index} -  Number of instructions: {proc.getProcLen()}
-		</li>
-	    ))}
-	    </ul>
-	</div>
-    );
-}
-
-
-
-
-
 class Context{
 
     nextID = 1; //Value assigned as each processes ID. Incremented when new process context is initialized with set().
@@ -285,5 +261,38 @@ function SJFChart({indata}) {
 
     return <Bar data={chartData} options={options} />;
 };
+
+function StepSTCF() {
+
+    //take in a proc list and context object 
+    
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export { createProc, process, ProcListDeets, Context, FIFOChart, SJFChart,  StepFIFO, StepSJF };
