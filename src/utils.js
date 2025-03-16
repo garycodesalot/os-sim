@@ -79,7 +79,7 @@ class Context{
 
     setContext(proc){   //This will set the process ID for a single process and associate a pc variable to that ID in a key-value pair.
 
-	let pc = 1;
+	let pc = 0;
 	proc.id = this.nextID;
 	this.PCBmap.set(proc.id, pc);
 	this.nextID = this.nextID + 1; //inc to next ID.
@@ -122,8 +122,9 @@ function StepFIFO (FIFO_procList, FIFO_context){
     
     if (!wProcList || wProcList.length == 0){
 
-	//TODO: not exactly an error, maybe find a way to print complete on the FIFO chart or something
-	throw new Error("0 processes to execute in FIFO scheduler");
+	//maybe return a flag here that calls a function to display the function stats
+	return {wProcList, wContext};
+	
 	
     }
 
@@ -133,7 +134,6 @@ function StepFIFO (FIFO_procList, FIFO_context){
     if(pc == 0){
 
 	wContext.setContext(wProcList[0]);
-	wContext.incrementPC(wProcList[0]);
 	console.log("IF 1");
 
     }
@@ -158,39 +158,42 @@ function StepFIFO (FIFO_procList, FIFO_context){
 
 function FIFOChart({indata}) {
 
-   const [progress, labels] = indata ?? [[0], [0]];
+    const [progress, labels] = indata ?? [[0], [0]];
 
-   const chartData = {
-       
-    labels: ["red", "blue", "green", "orange", "purple", "yellow"],
-    datasets: [
-      {
-          label: "# of instructions",
-          data: progress,
-          backgroundColor: ["red", "blue", "green", "orange", "purple", "yellow"],
-          borderColor: "black",
-          borderWidth: 1,
-      },
-     	
-    ],
-   };
+    const chartData = {
+	labels,
+	datasets: [
+	    {
+		label: "# of instructions",
+		data: progress,
+		backgroundColor: ["blue"],
+		borderColor: "black",
+		borderWidth: 1,
+	    },
+	],
+    };
 
     
-  const options = {
-      responsive: true,
+    const options = {
+	devicePixelRatio: 1,
+	animations: false,
+	responsive: false,
+	barThickness: 10,
       
-      plugins: {
-	  legend: { display: false },
-	  title: { display: false },
-	       },
+	plugins: {
+	    legend: { display: false },
+	    title: { display: false },
+	},
       
-      scales: {
+	scales: {
 	  y: {
 	      beginAtZero: true, grid: { display: true },
-	      ticks: { display: true }
-	     },
-      },
-  };
+	      ticks: { display: true },
+	      min: 0,
+	      max: 20
+	  },
+	},
+    };
 
   return <Bar data={chartData} options={options} />;
 };
