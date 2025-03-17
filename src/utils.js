@@ -43,30 +43,6 @@ function createProc(quantity){
 }
 
 
-//function will return HTML that displays all of the processes, thei index in proclist, and length.
-function ProcListDeets({procs}){
-
-    return(
-	<div style={{margin: "10px"}}>
-
-	    <h2>Generated Process Properties</h2>
-	    
-	    <ul>
-	    
-	    {procs.map((proc, index) => (
-		<li key={index}>
-		    Process: {index} -  Number of instructions: {proc.getProcLen()}
-		</li>
-	    ))}
-	    </ul>
-	</div>
-    );
-}
-
-
-
-
-
 class Context{
 
     nextID = 1; //Value assigned as each processes ID. Incremented when new process context is initialized with set().
@@ -79,7 +55,7 @@ class Context{
 
     setContext(proc){   //This will set the process ID for a single process and associate a pc variable to that ID in a key-value pair.
 
-	let pc = 0;
+	let pc = 1;
 	proc.id = this.nextID;
 	this.PCBmap.set(proc.id, pc);
 	this.nextID = this.nextID + 1; //inc to next ID.
@@ -133,70 +109,24 @@ function StepFIFO (FIFO_procList, FIFO_context){
     if(pc == 0){
 
 	fContext.setContext(fProcList[0]);
-	console.log("IF 1");
 
     }
 
     if(fProcList[0].instrArr[pc] == 'RETURN'){
 	
 	fProcList.shift();
-	console.log("IF 2");
 	
     }
     else{
 
 	fContext.incrementPC(fProcList[0]);
-	console.log("ELSE");
 	
     }
 
-    //returns updated context, procList should be passed by reference and is modified in place so it does not need to be returned.
     return {fProcList, fContext};
     
 }
 
-function FIFOChart({indata}) {
-
-    const [progress, labels] = indata ?? [[0], [0]];
-
-    const chartData = {
-	labels,
-	datasets: [
-	    {
-		label: "# of instructions",
-		data: progress,
-		backgroundColor: ["blue"],
-		borderColor: "black",
-		borderWidth: 1,
-	    },
-	],
-    };
-
-    
-    const options = {
-	devicePixelRatio: 1,
-	animations: false,
-	responsive: false,
-	barThickness: 10,
-      
-	plugins: {
-	    legend: { display: false },
-	    title: { display: false },
-	},
-      
-	scales: {
-	  y: {
-	      beginAtZero: true,
-	      grid: { display: true },
-	      ticks: { display: true },
-	      min: 0,
-	      max: 20
-	  },
-	},
-    };
-
-    return <Bar data={chartData} options={options} />;
-};
 
 //Assuming processes do not all arrive at the same time, SJF is pretty much the exact same as FIFO, being non preemptive. I dont even know why I am making a new function. 
 function StepSJF(SJF_procList, SJF_context){
@@ -221,20 +151,17 @@ function StepSJF(SJF_procList, SJF_context){
     if(pc == 0){
 
 	sContext.setContext(sProcList[0]);
-	console.log("IF 1");
 
     }
 
     if(sProcList[0].instrArr[pc] == 'RETURN'){
 	
 	sProcList.shift();
-	console.log("IF 2");
 	
     }
     else{
 
 	sContext.incrementPC(sProcList[0]);
-	console.log("ELSE");
 	
     }
 
@@ -243,7 +170,102 @@ function StepSJF(SJF_procList, SJF_context){
 
 }
 
-function SJFChart({indata}) {
+function StepSTCF(STCF_procList, STCF_context) {
+
+    //For the first process and then every time the function process list shifts, the first process (in work process) length must be checked against each of the remaining
+    //process lengths, scheduling the shortest job, whichever it may be. TODO: fix the ID's during this one.
+
+    let stContext = new Context();
+    stContext = STCF_context;
+    let stProcList = STCF_procList;
+
+    if (!stProcList || stProcList.length == 0){
+
+	//maybe return a flag here that calls a function to display the function stats
+	return {stProcList, stContext};
+	
+    }
+
+    let shortestIndex = 0;
+    for(let i = 1; i < stProcList.length; i++){
+	
+	if(stProcList[i].instrArr.length < stProcList[shortestIndex].instrArr.length){
+	    shortestIndex = i;
+	}
+    }
+
+    //Swap shortest process with first process (one that will be stepped thru) if it has changed
+
+    if(shortestIndex !== 0){
+	[stProcList[0], stProcList[shortestIndex]] = [stProcList[shortestIndex], stProcList[0]];
+    }
+
+    let pc = stContext.getPC(stProcList[0]);
+    //execute process
+
+    if(stProcList[0].instrArr[pc] == 'RETURN'){
+	
+	stProcList.shift();
+	console.log("IF 2");
+	
+    }
+    else{
+
+	stContext.incrementPC(stProcList[0]);
+	
+    }
+
+    return{stProcList, stContext};
+}
+
+function StepRR(RR_procList, RR_context){
+
+    let rContext = new Context();
+    rContext = RR_context;
+    let rProcList = RR_procList;
+    let temp = RR_procList[0];
+
+   if (!rProcList || rProcList.length == 0){
+
+	//maybe return a flag here that calls a function to display the function stats
+	return {rProcList, rContext};
+	
+    }
+    
+    let pc = rContext.getPC(rProcList[0]);
+    
+    if(rProcList[0].instrArr[pc] == 'RETURN'){
+	
+	rProcList.shift();
+	console.log("IF 2");
+	
+    }
+    else{
+
+	rContext.incrementPC(rProcList[0]);
+	rProcList.shift();
+	rProcList.push(temp);
+	
+    }
+
+
+
+    return{rProcList, rContext};
+    
+    
+
+}
+
+
+
+
+
+
+
+
+
+    
+function FIFO_SJF_STCF_RR_Chart({indata}) {
 
     const [progress, labels] = indata ?? [[0], [0]];
 
@@ -286,4 +308,4 @@ function SJFChart({indata}) {
     return <Bar data={chartData} options={options} />;
 };
 
-export { createProc, process, ProcListDeets, Context, FIFOChart, SJFChart,  StepFIFO, StepSJF };
+export { createProc, process, Context, StepFIFO, StepSJF, StepSTCF, StepRR, FIFO_SJF_STCF_RR_Chart };

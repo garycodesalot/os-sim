@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./styles.css";
-import {createProc, process, ProcListDeets, FIFOChart, SJFChart, Context, StepFIFO, StepSJF} from "./utils.js";
+import {createProc, process, FIFO_SJF_STCF_RR_Chart, Context, StepFIFO, StepSJF, StepSTCF, StepRR} from "./utils.js";
 
 
 function App() {
 
-    //User generated proclist
+    //User generated random procList
     const[procList, setProcList] = useState([]);
 
     //FIFO stuff
@@ -19,11 +19,19 @@ function App() {
     const[SJF_data, setSJFdata] = useState([]);
 
     //STCF stuff
+    const[STCF_procList, setSTCFProcList] = useState([]);
+    const[STCF_context, setSTCFContext] = useState(new Context());
+    const[STCF_data, setSTCFdata] = useState([]);
 
     //MLFQ stuff
 
+    //RR stuff
+    const[RR_procList, setRRProcList] = useState([]);
+    const[RR_context, setRRContext] = useState(new Context());
+    const[RR_data, setRRdata] = useState([]);
+
     //Simulation display setting
-    const[displayOption setDisplayOption] = useState("");
+    const[displayOption, setDisplayOption] = useState("");
 
     //Time quantum counter and start status
     const[timeQuant , setTimeQuant] = useState(0);
@@ -35,7 +43,6 @@ function App() {
 	const interval = setInterval(() => running &&  setTimeQuant(timeQuant + 1), 1000);
 
 	handleStep();
-
 	
 	return () => clearInterval(interval);
 	
@@ -64,6 +71,8 @@ function App() {
 	    let values = [];
 
 	    for (let i = 0; i < newList.length; i++) {
+
+		FIFO_context.setContext(newList[i]);
 		let pc = FIFO_context.getPC(newList[i]);
 		let progress = newList[i].instrArr.length - pc;
 
@@ -85,6 +94,7 @@ function App() {
 	    let values = [];
 
 	    for (let i = 0; i < newList.length; i++) {
+		SJF_context.setContext(newList[i]);
 		let pc = SJF_context.getPC(newList[i]);
 		let progress = newList[i].instrArr.length - pc;
 
@@ -97,7 +107,50 @@ function App() {
 
 	    return newList; // Ensures state is updated properly
 	});
-	
+
+	//STCF//
+	setSTCFProcList(prevState => {
+	    const newList = structuredClone(newProcList);
+
+	    let labels = [];
+	    let values = [];
+
+	    for (let i = 0; i < newList.length; i++) {
+		STCF_context.setContext(newList[i]);
+		let pc = STCF_context.getPC(newList[i]);
+		let progress = newList[i].instrArr.length - pc;
+
+		labels.push(newList[i].id);
+		values.push(progress);
+	    }
+
+	    console.log("Updated STCF Data:", values);
+	    setSTCFdata([values, labels]);
+
+	    return newList; // Ensures state is updated properly
+	});
+
+	//RR//
+	setRRProcList(prevState => {
+	    const newList = structuredClone(newProcList);
+
+	    let labels = [];
+	    let values = [];
+
+	    for (let i = 0; i < newList.length; i++) {
+		RR_context.setContext(newList[i]);
+		let pc = RR_context.getPC(newList[i]);
+		let progress = newList[i].instrArr.length - pc;
+
+		labels.push(newList[i].id);
+		values.push(progress);
+	    }
+
+	    console.log("Updated RR Data:", values);
+	    setRRdata([values, labels]);
+
+	    return newList; // Ensures state is updated properly
+	});
 
     }
     
@@ -106,9 +159,7 @@ function App() {
 	let labels = [];
 	let values = [];
 	let pc = 0;
-	let progress = 0;
-	
-	
+	let progress = 0;	
 
 	//FIFO//
 	let {fProcList , fContext} = StepFIFO(FIFO_procList, FIFO_context);
@@ -120,7 +171,6 @@ function App() {
 	values = [];
 
 	for(let i = 0; i < FIFO_procList.length ; i++){
-
 	    pc = FIFO_context.getPC(FIFO_procList[i]);
 	    progress = (FIFO_procList[i].instrArr.length - pc);
 
@@ -141,7 +191,7 @@ function App() {
 	values = [];
 
 	for(let i = 0; i < SJF_procList.length ; i++){
-
+	    
 	    pc = SJF_context.getPC(SJF_procList[i]);
 	    progress = (SJF_procList[i].instrArr.length - pc);
 
@@ -150,6 +200,45 @@ function App() {
 	    
 	}
 	setSJFdata([values, labels]);
+
+	//STCF//
+	let {stProcList, stContext} = StepSTCF(STCF_procList, STCF_context);
+	setSTCFProcList(stProcList);
+	setSTCFContext(stContext);
+
+	labels = [];
+	values = [];
+
+	for(let i = 0; i < STCF_procList.length ; i++){
+	    
+	    pc = STCF_context.getPC(STCF_procList[i]);
+	    progress = (STCF_procList[i].instrArr.length - pc);
+
+	    labels.push(STCF_procList[i].id);
+	    values.push(progress);
+	    
+	}
+	setSTCFdata([values, labels]);
+
+	//RR//
+	let {rProcList, rContext} = StepRR(RR_procList, RR_context);
+	setRRProcList(rProcList);
+	setRRContext(rContext);
+
+	labels = [];
+	values = [];
+
+	for(let i = 0; i < RR_procList.length ; i++){
+	    
+	    pc = RR_context.getPC(RR_procList[i]);
+	    progress = (RR_procList[i].instrArr.length - pc);
+
+	    labels.push(RR_procList[i].id);
+	    values.push(progress);
+	    
+	}
+	setRRdata([values, labels]);
+
 	
     }
 
@@ -183,10 +272,21 @@ function App() {
 	  
 	  <div className="lr-header-sections">
 	      <h2>Simulation Settings</h2>
-	      <label> htmlFor="options">Choose Simulation to Display</label>
+	      <label>Choose Simulation to Display: </label>
+	      <select> id="options" value="{displayOption} onChange={handleDisplay}>
+		  <option value="All">Show All</option>
+		  <option value="FIFO">FIFO</option>
+		  <option value="SJF">SJF</option>
+		  <option value="RR">Round Robin</option>
+		  <option value="MLFQ">MLFQ</option>
+		  <option value="STCF">STCF</option>
+	      </select>
 
+	      <div style={{padding: "10px"}}>
+		  <label>Start Simulation(s) at 1hz or stop: </label>
+		  <button onClick={() => setRunning((prevRunning) => !prevRunning)}>Start/Stop</button>
+	      </div>
 	      
-	      <button onClick={() => setRunning((prevRunning) => !prevRunning)}>Start/Stop</button>
 
 
 	     
@@ -200,16 +300,28 @@ function App() {
 	   
 	  <div className="chart-box">
 	      <h2>FIFO</h2>
-	      <FIFOChart indata={FIFO_data} />
-	      <button onClick = {handleStep}>Step once</button>
+	      <FIFO_SJF_STCF_RR_Chart indata={FIFO_data} />
 
 	  </div>
 	  
 	  <div className="chart-box">
 
 	      <h2>SJF</h2>
-	      <SJFChart indata={SJF_data} />
-	      <button onClick = {handleStep}>Step once</button>
+	      <FIFO_SJF_STCF_RR_Chart indata={SJF_data} />
+	  
+	  </div>
+
+	  <div className="chart-box">
+
+	      <h2>STCF</h2>
+	      <FIFO_SJF_STCF_RR_Chart indata={STCF_data} />
+	  
+	  </div>
+
+	  <div className="chart-box">
+
+	      <h2>RR</h2>
+	      <FIFO_SJF_STCF_RR_Chart indata={RR_data} />
 	  
 	  </div>
 
