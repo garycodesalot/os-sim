@@ -50,15 +50,30 @@ class Context{
     constructor(){ //Map to manage all processes and PC's
 	
 	this.PCBmap = new Map();
+	this.procTime = new Map(); //only needed for MLFQ to track amt of time steps a process has been active an a queue.
 	
     }
 
     setContext(proc){   //This will set the process ID for a single process and associate a pc variable to that ID in a key-value pair.
 
-	let pc = 1;
+	let pc = 0;
+	let time = 1;
 	proc.id = this.nextID;
 	this.PCBmap.set(proc.id, pc);
+	this.procTime.set(proc.id, time);
 	this.nextID = this.nextID + 1; //inc to next ID.
+	
+    }
+
+    setProcTime(proc, value){
+
+	this.procTime.set(proc.id, value);
+
+    }
+
+    getProcTime(proc){
+
+	return this.procTime.get(proc.id);
 	
     }
 
@@ -72,12 +87,6 @@ class Context{
 	
 	let currPC = this.getPC(proc) 
 	this.PCBmap.set(proc.id, currPC + 1);
-	
-    }
-
-    removeProcess(proc){
-
-	this.PCBmap.delete(proc.id);
 	
     }
 
@@ -201,6 +210,12 @@ function StepSTCF(STCF_procList, STCF_context) {
     }
 
     let pc = stContext.getPC(stProcList[0]);
+
+    if(pc == 0){
+
+	stContext.setContext(stProcList[0]);
+
+    }
     //execute process
 
     if(stProcList[0].instrArr[pc] == 'RETURN'){
@@ -233,11 +248,16 @@ function StepRR(RR_procList, RR_context){
     }
     
     let pc = rContext.getPC(rProcList[0]);
+
+    if(pc == 0){
+
+	rContext.setContext(rProcList[0]);
+
+    }
     
     if(rProcList[0].instrArr[pc] == 'RETURN'){
 	
 	rProcList.shift();
-	console.log("IF 2");
 	
     }
     else{
@@ -248,15 +268,69 @@ function StepRR(RR_procList, RR_context){
 	
     }
 
-
-
     return{rProcList, rContext};
     
-    
-
 }
 
+function StepMLFQ(MLFQ_A, MLFQ_B, MLFQ_context, allotment, timeQuant){
 
+    let mContext = new Context();
+    mContext = MLFQ_context;
+    let queA = MLFQ_A;
+    let queB = MLFQ_B;
+
+    if (!queA || queA.length == 0){
+
+	//maybe return a flag here that calls a function to display the function stats
+	return {queA, queB, mContext};
+	
+    }
+
+    let pc = mContext.getPC(queA[0]);
+
+    if(pc == 0){
+
+	mContext.setContext(queA[0]);
+
+    }
+
+    if(queA[0].instrArr[pc] == 'RETURN'){
+
+	//Process is done, push it off the process list
+	queA.shift();
+    }
+    
+    if( mContext.getProcTime(queA[0]) % allotment == 0){
+
+	//Process used its whole allotment, deranking to queue B and reset its time executing
+	mContext.setProcTime(queA[0], 1);
+	queB.push(queA[0]);
+	queA.shift();
+	
+    }else{
+
+	//Increment processes time runnning and PC
+	mContext.setProcTime(queA[0], mContext.getProcTime(queA[0]) + 1);
+	mContext.incrementPC(queA[0]);
+
+    }
+
+    let boostTime = 7;
+
+    if(timeQuant % boostTime == 0){
+
+	for(let i = 0; i < queB.length ; i++){
+
+	    queA.push(queB[0]);
+	    queB.shift();
+	    
+	}
+
+    }
+
+    return{queA, queB, mContext};
+    
+}
 
 
 
@@ -308,4 +382,4 @@ function FIFO_SJF_STCF_RR_Chart({indata}) {
     return <Bar data={chartData} options={options} />;
 };
 
-export { createProc, process, Context, StepFIFO, StepSJF, StepSTCF, StepRR, FIFO_SJF_STCF_RR_Chart };
+export { createProc, process, Context, StepFIFO, StepSJF, StepSTCF, StepRR, StepMLFQ, FIFO_SJF_STCF_RR_Chart };
