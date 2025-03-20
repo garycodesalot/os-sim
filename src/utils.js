@@ -24,9 +24,6 @@ class process{
     
 }
 
-
-
-
 //Generates process list of 'quantity' processes
 function createProc(quantity){
     
@@ -140,8 +137,6 @@ function StepFIFO (FIFO_procList, FIFO_context){
 //Assuming processes do not all arrive at the same time, SJF is pretty much the exact same as FIFO, being non preemptive. I dont even know why I am making a new function. 
 function StepSJF(SJF_procList, SJF_context){
 
-
-    //Have to make working context and proclist elements so that useEffect in the barchart function detects a refrence update and changes the chart.
     let sContext = new Context();
     sContext = SJF_context;
     let sProcList = SJF_procList
@@ -190,7 +185,6 @@ function StepSTCF(STCF_procList, STCF_context) {
 
     if (!stProcList || stProcList.length == 0){
 
-	//maybe return a flag here that calls a function to display the function stats
 	return {stProcList, stContext};
 	
     }
@@ -242,7 +236,6 @@ function StepRR(RR_procList, RR_context){
 
    if (!rProcList || rProcList.length == 0){
 
-	//maybe return a flag here that calls a function to display the function stats
 	return {rProcList, rContext};
 	
     }
@@ -272,19 +265,14 @@ function StepRR(RR_procList, RR_context){
     
 }
 
-function StepMLFQ(MLFQ_A, MLFQ_B, MLFQ_context, allotment, timeQuant){
+function StepMLFQ(MLFQ_A, MLFQ_B, MLFQ_context, allotment, boostTime, timeQuant){
 
     let mContext = new Context();
     mContext = MLFQ_context;
     let queA = MLFQ_A;
     let queB = MLFQ_B;
 
-    if (!queA || queA.length == 0){
-
-	//maybe return a flag here that calls a function to display the function stats
-	return {queA, queB, mContext};
-	
-    }
+    if (!queA || queA.length == 0){ return {queA, queB, mContext}; }
 
     let pc = mContext.getPC(queA[0]);
 
@@ -298,6 +286,7 @@ function StepMLFQ(MLFQ_A, MLFQ_B, MLFQ_context, allotment, timeQuant){
 
 	//Process is done, push it off the process list
 	queA.shift();
+	if (!queA || queA.length == 0){ return {queA, queB, mContext}; }
     }
     
     if( mContext.getProcTime(queA[0]) % allotment == 0){
@@ -315,11 +304,9 @@ function StepMLFQ(MLFQ_A, MLFQ_B, MLFQ_context, allotment, timeQuant){
 
     }
 
-    let boostTime = 7;
-
     if(timeQuant % boostTime == 0){
 
-	for(let i = 0; i < queB.length ; i++){
+	while(queB.length > 0){
 
 	    queA.push(queB[0]);
 	    queB.shift();
@@ -332,13 +319,6 @@ function StepMLFQ(MLFQ_A, MLFQ_B, MLFQ_context, allotment, timeQuant){
     
 }
 
-
-
-
-
-
-
-    
 function FIFO_SJF_STCF_RR_Chart({indata}) {
 
     const [progress, labels] = indata ?? [[0], [0]];

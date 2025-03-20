@@ -1,5 +1,6 @@
 .center {
     text-align: center;
+    margin: 0 auto;
 }
 
 .chart-grid{
@@ -13,9 +14,9 @@
 }
 
 .chart-box{
-    
+
+    margin: 0 auto;
     width: "600px";
-    margin: "auto" ;
 
 }
 
@@ -30,6 +31,12 @@
 .lr-header-sections{
   flex: 1; /* Makes both sections take equal space */
   padding: 20px;
+  display: block;  /* Ensures each label takes its own line */
+  text-align: left;
+  margin-bottom: 0.5rem; /* Optional spacing between labels */
 }
 
-
+.single-chart {
+  display: flex;
+  justify-content: center;
+}

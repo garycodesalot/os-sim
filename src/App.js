@@ -34,10 +34,14 @@ function App() {
     const[MLFQB_procList, setMLFQBProcList] = useState([]);
     const[MLFQA_data, setMLFQAdata] = useState([]);
     const[MLFQB_data, setMLFQBdata] = useState([]);
+
+    const[MLFQ_allottment, setAllottment] = useState(5);
+    const[MLFQ_boost, setBoost] = useState(7);
+    
     
     
     //Simulation display setting
-    const[displayOption, setDisplayOption] = useState("");
+    const[displayOption, setDisplayOption] = useState('All');
 
     //Time quantum counter and start status
     const[timeQuant , setTimeQuant] = useState(0);
@@ -54,8 +58,159 @@ function App() {
 	
     },[timeQuant, running]);
 
-    function handleDisplay(event){
-	setDisplayOption(event.target.value);
+    function handleDisplay(event){ setDisplayOption(event.target.value); }
+
+    function handleAllottment(event){
+
+	event.preventDefault();
+	const formData = new FormData(event.target)
+        const num = Number(formData.get("Allotment: "))
+	setAllottment(num);
+
+    }
+
+    function handleBoost(event){
+
+	event.preventDefault();
+	const formData = new FormData(event.target)
+        const num = Number(formData.get("Boost: "))
+	setBoost(formData);
+
+    }
+    
+
+    function displayMethod(displayOption){
+
+	switch(displayOption){
+	case 'All':
+	    return (
+
+		<div className="chart-grid">
+		<div className="chart-box">
+
+		    <h2>FIFO</h2>
+		    <FIFO_SJF_STCF_RR_Chart indata={FIFO_data} />
+
+		</div>
+	  
+		<div className="chart-box">
+
+		    <h2>SJF</h2>
+		    <FIFO_SJF_STCF_RR_Chart indata={SJF_data} />
+	  
+		</div>
+
+		<div className="chart-box">
+
+		    <h2>STCF</h2>
+		    <FIFO_SJF_STCF_RR_Chart indata={STCF_data} />
+	  
+		</div>
+
+		<div className="chart-box">
+
+		    <h2>RR</h2>
+		    <FIFO_SJF_STCF_RR_Chart indata={RR_data} />
+	  
+		</div>
+
+		<div className="chart-box">
+
+		    <h2>MLFQ | {MLFQ_boost} {MLFQ_allottment}</h2>
+		    <FIFO_SJF_STCF_RR_Chart indata={MLFQA_data} />
+		    <FIFO_SJF_STCF_RR_Chart indata={MLFQB_data} />
+	  
+		</div>
+
+		</div>
+	    )
+	case 'FIFO':
+	    return(
+		<>
+		<div className="center">
+
+		      <h2>FIFO</h2>
+		    
+		</div>
+		
+		<div className="single-chart">
+
+		    <FIFO_SJF_STCF_RR_Chart indata={FIFO_data} />
+
+		</div>
+		</>
+	    )
+	case 'SJF':
+	    return(
+		<>
+		<div className="center">
+
+		      <h2>SJF</h2>
+		    
+		</div>
+		
+		<div className="single-chart">
+
+		    <FIFO_SJF_STCF_RR_Chart indata={SJF_data} />
+
+		</div>
+		</>
+	    )
+	case 'STCF':
+	    return(
+		<>
+		<div className="center">
+
+		      <h2>STCF</h2>
+		    
+		</div>
+		
+		<div className="single-chart">
+
+		    <FIFO_SJF_STCF_RR_Chart indata={STCF_data} />
+
+		</div>
+		</>
+	    )
+	case 'RR':
+	    return(
+		<>
+		<div className="center">
+
+		      <h2>RR</h2>
+		    
+		</div>
+		
+		<div className="single-chart">
+
+		    <FIFO_SJF_STCF_RR_Chart indata={RR_data} />
+
+		</div>
+		</>
+	    )
+	case 'MLFQ':
+	    return(
+		<>
+		    <div className="center">
+
+			<h2>MLFQ | {MLFQ_boost} {MLFQ_allottment}</h2>
+
+		    </div>
+		
+		<div className="single-chart">
+
+		    <FIFO_SJF_STCF_RR_Chart indata={MLFQA_data} />
+
+		</div>
+
+		<div className="single-chart">
+
+		    <FIFO_SJF_STCF_RR_Chart indata={MLFQB_data} />
+
+		</div>
+		</>
+	    )	    
+	}
     }
 
     function handleProcSubmit(event){
@@ -279,7 +434,7 @@ function App() {
 	setRRdata([values, labels]);
 
 	//MLFQ//
-	let {queA, queB, mContext} = StepMLFQ(MLFQA_procList, MLFQB_procList, MLFQ_context, 5, timeQuant);
+	let {queA, queB, mContext} = StepMLFQ(MLFQA_procList, MLFQB_procList, MLFQ_context, MLFQ_allottment, MLFQ_boost, timeQuant);
 	setMLFQAProcList(queA);
 	setMLFQBProcList(queB);
 	setMLFQContext(mContext);
@@ -347,8 +502,8 @@ function App() {
 	  <div className="lr-header-sections">
 	      <h2>Simulation Settings</h2>
 	      <label>Choose Simulation to Display: </label>
-	      <select> id="options" value="{displayOption} onChange={handleDisplay}>
-		  <option value="All">Show All</option>
+	      <select id="options" value={displayOption} onChange={handleDisplay}>
+		  <option value='All'>Show All</option>
 		  <option value="FIFO">FIFO</option>
 		  <option value="SJF">SJF</option>
 		  <option value="RR">Round Robin</option>
@@ -356,7 +511,23 @@ function App() {
 		  <option value="STCF">STCF</option>
 	      </select>
 
-	      <div style={{padding: "10px"}}>
+	    
+	      <form onSubmit={handleAllottment}>
+		  <label>MLFQ Time Allotment: </label>
+		  <input name="Allottment: "/>
+		  <button type="submit">Submit</button>
+	      </form>
+
+	      <form onSubmit={handleBoost}>
+		  <label>MLFQ Time to Boost Processes: </label>
+		  <input name="Boost: "/>
+		  <button type="submit">Submit</button>
+	      </form>
+		  	  
+		  	      
+
+	      
+	      <div>
 		  <label>Start Simulation(s) at 1hz or stop: </label>
 		  <button onClick={() => setRunning((prevRunning) => !prevRunning)}>Start/Stop</button>
 	      </div>
@@ -367,44 +538,12 @@ function App() {
 
       <hr />
 
-      <div className="chart-grid">
-	   
-	  <div className="chart-box">
-	      <h2>FIFO</h2>
-	      <FIFO_SJF_STCF_RR_Chart indata={FIFO_data} />
+      <>
 
-	  </div>
-	  
-	  <div className="chart-box">
+	  {displayMethod(displayOption)}
 
-	      <h2>SJF</h2>
-	      <FIFO_SJF_STCF_RR_Chart indata={SJF_data} />
-	  
-	  </div>
-
-	  <div className="chart-box">
-
-	      <h2>STCF</h2>
-	      <FIFO_SJF_STCF_RR_Chart indata={STCF_data} />
-	  
-	  </div>
-
-	  <div className="chart-box">
-
-	      <h2>RR</h2>
-	      <FIFO_SJF_STCF_RR_Chart indata={RR_data} />
-	  
-	  </div>
-
-	   <div className="chart-box">
-
-	      <h2>MLFQ</h2>
-	       <FIFO_SJF_STCF_RR_Chart indata={MLFQA_data} />
-	       <FIFO_SJF_STCF_RR_Chart indata={MLFQB_data} />
-	  
-	  </div>
-
-      </div>
+      </>
+      
       
  </>   
   
