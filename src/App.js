@@ -360,9 +360,6 @@ function App() {
 		  <label>Start Simulation(s) at 1hz or stop: </label>
 		  <button onClick={() => setRunning((prevRunning) => !prevRunning)}>Start/Stop</button>
 	      </div>
-	      
-
-
 	     
 	 </div>
 	  
