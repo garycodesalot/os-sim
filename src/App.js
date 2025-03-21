@@ -482,7 +482,8 @@ function App() {
       
       <hr />
       
-      	<form onSubmit={handleProcSubmit} className ="center">
+      <form onSubmit={handleProcSubmit} className ="center">
+	  <label>Enter a number to generate random processes: </label>
 	    <input name="quantity"/>
 	    <button type="submit">Create Processes</button>
 	</form>
