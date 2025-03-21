@@ -35,8 +35,8 @@ function App() {
     const[MLFQA_data, setMLFQAdata] = useState([]);
     const[MLFQB_data, setMLFQBdata] = useState([]);
 
-    const[MLFQ_allottment, setAllottment] = useState(5);
-    const[MLFQ_boost, setBoost] = useState(7);
+    const[MLFQ_allottment, setAllottment] = useState();
+    const[MLFQ_boost, setBoost] = useState();
     
     
     
@@ -64,7 +64,7 @@ function App() {
 
 	event.preventDefault();
 	const formData = new FormData(event.target)
-        const num = Number(formData.get("Allotment: "))
+        const num = Number(formData.get("Allottment"))
 	setAllottment(num);
 
     }
@@ -73,8 +73,8 @@ function App() {
 
 	event.preventDefault();
 	const formData = new FormData(event.target)
-        const num = Number(formData.get("Boost: "))
-	setBoost(formData);
+        const num = Number(formData.get("Boost"))
+	setBoost(num);
 
     }
     
@@ -116,7 +116,8 @@ function App() {
 
 		<div className="chart-box">
 
-		    <h2>MLFQ | {MLFQ_boost} {MLFQ_allottment}</h2>
+		    <h2>MLFQ</h2>
+		    <h3>Boost time: {MLFQ_boost} Allotted Time: {MLFQ_allottment}</h3>
 		    <FIFO_SJF_STCF_RR_Chart indata={MLFQA_data} />
 		    <FIFO_SJF_STCF_RR_Chart indata={MLFQB_data} />
 	  
@@ -194,6 +195,7 @@ function App() {
 		    <div className="center">
 
 			<h2>MLFQ | {MLFQ_boost} {MLFQ_allottment}</h2>
+			<h3>Boost time: {MLFQ_boost} Allotted Time: {MLFQ_allottment}</h3>
 
 		    </div>
 		
@@ -338,6 +340,7 @@ function App() {
 	    setMLFQAdata([values, labels]);
 	    
 	    return newList; // Ensures state is updated properly
+
 	});
 
 	//Clears on each generation of processes.
@@ -514,13 +517,13 @@ function App() {
 	    
 	      <form onSubmit={handleAllottment}>
 		  <label>MLFQ Time Allotment: </label>
-		  <input name="Allottment: "/>
+		  <input name="Allottment"/>
 		  <button type="submit">Submit</button>
 	      </form>
 
 	      <form onSubmit={handleBoost}>
 		  <label>MLFQ Time to Boost Processes: </label>
-		  <input name="Boost: "/>
+		  <input name="Boost"/>
 		  <button type="submit">Submit</button>
 	      </form>
 		  	  
