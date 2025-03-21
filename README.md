@@ -1,70 +1,30 @@
-# Getting Started with Create React App
+# Dirns OS Scheduler Simulation App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Simulations:
 
-## Available Scripts
+FIFO: First in, first out. The first process in the generated list is executed in its entirety before the next one.
 
-In the project directory, you can run:
+SJF: Shortest job first. This is a non preemtive scheduler that acts exactly the same as FIFO assuming all processes arrive at the same time. 
 
-### `npm start`
+STCF: Shortest time to completion first: Process with the shortest length   instruction set is moved to the head of the process list initially, and after each process executes.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+RR: Each process is stepped through once (pc incremented one time) and then moved to the back of the queue.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+MLFQ: If a process completes before the allottment it is shifted off the process list. If the process runs the full length of the allottment it is deranked to the second priority queue. After a length of time determined by the boost setting, all lower priority processes are moved back up to the highest queue.
 
-### `npm test`
+        NOTE: Boost does not depend on the length of time a proccess has been in a lower priorty.
+    
+        NOTE: In this MLFQ implementation, the highest priority processes do not run in RR, they run in FIFO fashion due to each process taking the same amount of time per instruction and "always requiring the CPU".
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Running the Sim and Settings:
+Create Processes: Enter a number to create the process list that each simulation will utilize and modify clones of independently. After entering a number, that many processes will be created with each having a random instruction set ranging in size from 1 to 20. These are actual array elements for each process. A context object, created for each class keeps track of the program counter for each process.
 
-### `npm run build`
+Choose Simulation to Display: Straight forward; select how you would like to view the simulations. (All are proccessed in the background regardless of choice)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+MLFQ Time Allottment: Number of time steps a process must be complete in before it is deranked (only applicable to MLFQ sim)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+MLFQ Boost Time: After the amount of time steps entered here, all proccess in the lower queue will be added to the end of the higher priority queue.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Start/Stop: Easy as it gets! Click to start or stop the 1hz clock and begin processing programs. 
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
