@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/os-sim/static/css/main.157c99c0.css",
+    "main.js": "/os-sim/static/js/main.0b0f2bc9.js",
+    "static/js/453.ad8d0f17.chunk.js": "/os-sim/static/js/453.ad8d0f17.chunk.js",
+    "index.html": "/os-sim/index.html",
+    "main.157c99c0.css.map": "/os-sim/static/css/main.157c99c0.css.map",
+    "main.0b0f2bc9.js.map": "/os-sim/static/js/main.0b0f2bc9.js.map",
+    "453.ad8d0f17.chunk.js.map": "/os-sim/static/js/453.ad8d0f17.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.157c99c0.css",
+    "static/js/main.0b0f2bc9.js"
+  ]
+}
